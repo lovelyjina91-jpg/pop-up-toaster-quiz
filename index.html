@@ -53,7 +53,6 @@
   }
   .btn:active { transform:translateY(1px); }
   .btn.ghost { background:#fff; color:#c8651b; border:2px solid #ffcf9e; box-shadow:none; }
-  /* result */
   .score-big { font-size:46px; font-weight:900; text-align:center; color:#ff8a3d; }
   .score-sub { text-align:center; font-size:15px; margin-bottom:18px; color:#7a5d3d;}
   .rev { border-radius:14px; padding:14px; margin-bottom:12px; font-size:14px;}
@@ -74,7 +73,6 @@
 <body>
 <div class="wrap">
 
-  <!-- START -->
   <div id="start" class="card">
     <h1>🍞 Pop-Up Toaster 암기 퀴즈</h1>
     <p class="sub">동아여중 2학년 · 한태은</p>
@@ -88,7 +86,6 @@
     <button class="btn" onclick="startQuiz()">시작하기 ▶</button>
   </div>
 
-  <!-- QUIZ -->
   <div id="quiz" class="card hide">
     <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
     <div class="progress-txt" id="ptxt"></div>
@@ -98,18 +95,13 @@
     <button class="btn" id="nextBtn" onclick="submitAnswer()">확인 (Enter)</button>
   </div>
 
-  <!-- RESULT -->
   <div id="result" class="card hide"></div>
 
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-const PASSAGE_KO = "팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다. 1900년대에는 많은 식당들이 탄 토스트를 내놓았다. Charles는 탄 토스트를 좋아하지 않아서 팝업 토스터를 발명했다. 나는 그것이 매번 완벽한 토스트를 만들어 주기 때문에 훌륭한 발명품이라고 생각한다.";
-
-// 문제 데이터 — 단어 나열 주관식 + 문장 쓰기 주관식 위주
 const questions = [
-  // ===== 1단계: 단어 나열로 문장 익히기 =====
   { type:"order", typeLabel:"단어 나열 ①",
     q:"우리말에 맞게 단어를 나열하세요.\n\"팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다.\"",
     words:["The pop-up toaster","was","invented","by","Charles Strite","in 1919","in the USA"],
@@ -134,7 +126,6 @@ const questions = [
     answer:"I think it is a great invention because it makes perfect toast every time",
     exp:"<b>I think it is a great invention because it makes perfect toast every time.</b> '~때문에(이유)' because 뒤에는 '주어+동사'가 와요." },
 
-  // ===== 2단계: 문장 통째로 쓰기 =====
   { type:"fill", typeLabel:"문장 쓰기 ①",
     q:"우리말을 보고 영어 문장을 직접 쓰세요.\n\"팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다.\"",
     accept:["The pop-up toaster was invented by Charles Strite in 1919 in the USA"],
@@ -159,7 +150,6 @@ const questions = [
     placeholder:"영어 문장을 입력하세요",
     exp:"정답: <b>I think it is a great invention because it makes perfect toast every time.</b>" },
 
-  // ===== 3단계: 핵심 표현 빈칸 (보너스) =====
   { type:"fill", typeLabel:"핵심 표현",
     q:"빈칸을 채우세요 (수동태):\nThe pop-up toaster ___ ___ ___ Charles Strite. (~에 의해 발명되었다)",
     accept:["was invented by"],
@@ -174,8 +164,8 @@ const questions = [
 ];
 
 let cur = 0;
-let selected = null;      // mc 선택 index
-let orderPick = [];       // order 선택
+let selected = null;
+let orderPick = [];
 const userAnswers = [];
 
 const $ = id => document.getElementById(id);
@@ -190,7 +180,7 @@ function renderQ(){
   selected = null; orderPick = [];
   const q = questions[cur];
   $("pfill").style.width = (cur/questions.length*100)+"%";
-  $("ptxt").textContent = `${cur+1} / ${questions.length} 문항`;
+  $("ptxt").textContent = (cur+1)+" / "+questions.length+" 문항";
   $("qtype").textContent = q.typeLabel;
   $("qtext").innerHTML = q.q.replace(/___/g,'<span class="blank">_____</span>');
   const area = $("answerArea");
@@ -200,20 +190,20 @@ function renderQ(){
     q.options.forEach((opt,i)=>{
       const d = document.createElement("div");
       d.className="opt"; d.dataset.i=i;
-      d.innerHTML = `<span class="num">${i+1}</span><span>${opt}</span>`;
+      d.innerHTML = '<span class="num">'+(i+1)+'</span><span>'+opt+'</span>';
       d.onclick=()=>selectMC(i);
       area.appendChild(d);
     });
     area.insertAdjacentHTML("beforeend",'<p class="hint">숫자키 1~'+q.options.length+' 또는 클릭으로 선택, Enter로 확인</p>');
   } else if(q.type==="fill"){
-    area.innerHTML = `<input type="text" id="txt" placeholder="${q.placeholder||'답 입력'}" autocomplete="off" autocapitalize="off">
-      <p class="hint">답을 쓰고 Enter 키를 누르세요</p>`;
+    area.innerHTML = '<input type="text" id="txt" placeholder="'+(q.placeholder||'답 입력')+'" autocomplete="off" autocapitalize="off">'
+      +'<p class="hint">답을 쓰고 Enter 키를 누르세요</p>';
     setTimeout(()=>{const t=$("txt"); if(t) t.focus();},50);
   } else if(q.type==="order"){
     const bank = document.createElement("div");
     bank.id="bank";
     const shuffled = [...q.words].sort(()=>Math.random()-0.5);
-    area.innerHTML = `<div id="picked" class="opt" style="min-height:48px;flex-wrap:wrap;cursor:default;background:#fff7ec;"></div>`;
+    area.innerHTML = '<div id="picked" class="opt" style="min-height:48px;flex-wrap:wrap;cursor:default;background:#fff7ec;"></div>';
     shuffled.forEach(w=>{
       const b=document.createElement("button");
       b.className="opt"; b.style.cssText="display:inline-flex;width:auto;margin:4px 6px 4px 0;";
@@ -221,7 +211,7 @@ function renderQ(){
       bank.appendChild(b);
     });
     area.appendChild(bank);
-    area.insertAdjacentHTML("beforeend",'<p class="hint">단어를 순서대로 누르세요. 다시 누르면 취소돼요.</p>');
+    area.insertAdjacentHTML("beforeend",'<p class="hint">단어를 순서대로 누르세요. 다시 누르면 취소돼요. 다 배열했으면 Enter로 확인!</p>');
   }
 }
 
@@ -252,7 +242,8 @@ function submitAnswer(){
     userStr = q.options[selected];
     correct = selected===q.answer;
   } else if(q.type==="fill"){
-    const v = $("txt").value;
+    const el=$("txt"); if(!el) return;
+    const v = el.value;
     if(!v.trim()){ showToast("답을 입력해 주세요!"); return; }
     userStr = v.trim();
     correct = q.accept.some(a=>norm(a)===norm(v));
@@ -281,26 +272,26 @@ function showResult(){
   const pct = Math.round(score/total*100);
   let msg = pct===100?"완벽해요! 본문을 다 외웠네요! 🏆":pct>=70?"잘했어요! 조금만 더! 💪":"오답 해설을 꼭 읽어보세요! 📖";
 
-  let html = `<h1>📊 결과</h1>
-    <div class="score-big">${score} / ${total}</div>
-    <div class="score-sub">${pct}점 · ${msg}</div>`;
+  let html = '<h1>📊 결과</h1>'
+    +'<div class="score-big">'+score+' / '+total+'</div>'
+    +'<div class="score-sub">'+pct+'점 · '+msg+'</div>';
 
   userAnswers.forEach((a,i)=>{
     const ct = correctText(a.q);
-    html += `<div class="rev ${a.correct?'ok':'no'}">
-      <div class="qq">${i+1}. ${a.q.q.replace(/___/g,'____')}</div>`;
+    html += '<div class="rev '+(a.correct?'ok':'no')+'">'
+      +'<div class="qq">'+(i+1)+'. '+a.q.q.replace(/___/g,'____').replace(/\n/g,' ')+'</div>';
     if(a.correct){
-      html += `<div class="ln ans">✅ 정답: ${ct}</div>`;
+      html += '<div class="ln ans">✅ 정답: '+ct+'</div>';
     } else {
-      html += `<div class="ln you">✏️ 내 답: ${a.userStr||'(미입력)'}</div>
-               <div class="ln ans">✅ 정답: ${ct}</div>`;
+      html += '<div class="ln you">✏️ 내 답: '+(a.userStr||'(미입력)')+'</div>'
+             +'<div class="ln ans">✅ 정답: '+ct+'</div>';
     }
-    html += `<div class="exp">💡 ${a.q.exp}</div></div>`;
+    html += '<div class="exp">💡 '+a.q.exp+'</div></div>';
   });
 
-  html += `<div class="end">수고했습니당 ~~~ ㅎㅎㅎ</div>`;
-  html += `<button class="btn" onclick="copyResult(${score},${total})">📋 지나티처에게 결과 보내기 (카톡 복사)</button>`;
-  html += `<button class="btn ghost" onclick="location.reload()">🔄 다시 풀기</button>`;
+  html += '<div class="end">수고했습니당 ~~~ ㅎㅎㅎ</div>';
+  html += '<button class="btn" onclick="copyResult('+score+','+total+')">📋 지나티처에게 결과 보내기 (카톡 복사)</button>';
+  html += '<button class="btn ghost" onclick="location.reload()">🔄 다시 풀기</button>';
 
   const r = $("result");
   r.innerHTML = html;
@@ -311,23 +302,41 @@ function showResult(){
 function copyResult(score,total){
   const pct = Math.round(score/total*100);
   const wrong = userAnswers.map((a,i)=>({a,i})).filter(o=>!o.a.correct);
-  let txt = `🍞 Pop-Up Toaster 암기 퀴즈 결과\n`;
-  txt += `이름: 한태은 (동아여중 2-?)\n`;
-  txt += `점수: ${score}/${total} (${pct}점)\n`;
+  let txt = "🍞 Pop-Up Toaster 암기 퀴즈 결과\n";
+  txt += "이름: 한태은 (동아여중 2학년)\n";
+  txt += "점수: "+score+"/"+total+" ("+pct+"점)\n";
   if(wrong.length===0){
-    txt += `\n✨ 전부 다 맞았어요! 본문 암기 완료!`;
+    txt += "\n✨ 전부 다 맞았어요! 본문 암기 완료!";
   } else {
-    txt += `\n❌ 틀린 문제 (${wrong.length}개):\n`;
+    txt += "\n❌ 틀린 문제 ("+wrong.length+"개):\n";
     wrong.forEach(o=>{
-      txt += `· ${o.i+1}번 → 내답: ${o.a.userStr||'미입력'} / 정답: ${correctText(o.a.q)}\n`;
+      txt += "· "+(o.i+1)+"번 → 내답: "+(o.a.userStr||"미입력")+" / 정답: "+correctText(o.a.q)+"\n";
     });
   }
-  txt += `\n지나티처님, 확인 부탁드려요! 😊`;
+  txt += "\n지나티처님, 확인 부탁드려요! 😊";
 
   navigator.clipboard.writeText(txt).then(()=>{
     showToast("복사 완료! 카톡에 붙여넣기 하세요 📋");
   }).catch(()=>{
-    // fallback
     const ta=document.createElement("textarea");
     ta.value=txt; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy
+    document.execCommand("copy"); ta.remove();
+    showToast("복사 완료! 카톡에 붙여넣기 하세요 📋");
+  });
+}
+
+function showToast(m){
+  const t=$("toast"); t.textContent=m; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+document.addEventListener("keydown", e=>{
+  if(!$("quiz").classList.contains("hide")){
+    const q=questions[cur];
+    if(q.type==="mc" && /^[1-9]$/.test(e.key)){
+      const i=parseInt(e.key)-1;
+      if(i<q.options.length){ selectMC(i); }
+    }
+    if(e.key==="Enter"){ e.preventDefault(); submitAnswer(); }
+  } else if(!$("start").classList.contains("hide")){
+    if(e.
