@@ -27,7 +27,7 @@
   .progress-fill { height:100%; width:0; background:linear-gradient(90deg,#ffb347,#ff8a3d); transition:width .3s;}
   .progress-txt { font-size:12px; color:#9a7a55; text-align:right; margin-bottom:14px;}
   .qtype { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#ffe1c2; color:#c8651b; margin-bottom:10px;}
-  .qtext { font-size:17px; font-weight:600; margin-bottom:16px; }
+  .qtext { font-size:17px; font-weight:600; margin-bottom:16px; white-space:pre-line; }
   .qtext .blank { color:#ff8a3d; font-weight:800; letter-spacing:1px; }
   .opt {
     display:flex; align-items:center; gap:10px; width:100%; text-align:left;
@@ -84,7 +84,7 @@
       <b>so</b> he invented the pop-up toaster. I think it is a great invention <b>because</b> it makes
       <b>perfect toast every time</b>.
     </div>
-    <p class="hint">📌 본문을 한 번 읽고 시작! 객관식은 <b>숫자키(1~4)</b>, 단답은 답을 쓰고 <b>Enter</b> 키로 넘어가요. 정답은 다 푼 뒤에 공개돼요.</p>
+    <p class="hint">📌 본문을 한 번 읽고 시작! <b>단어 나열</b>은 단어를 순서대로 누르고, <b>문장 쓰기</b>는 직접 타이핑한 뒤 <b>Enter</b> 키로 넘어가요. 정답은 다 푼 뒤에 공개돼요.</p>
     <button class="btn" onclick="startQuiz()">시작하기 ▶</button>
   </div>
 
@@ -107,79 +107,70 @@
 <script>
 const PASSAGE_KO = "팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다. 1900년대에는 많은 식당들이 탄 토스트를 내놓았다. Charles는 탄 토스트를 좋아하지 않아서 팝업 토스터를 발명했다. 나는 그것이 매번 완벽한 토스트를 만들어 주기 때문에 훌륭한 발명품이라고 생각한다.";
 
-// 문제 데이터
+// 문제 데이터 — 단어 나열 주관식 + 문장 쓰기 주관식 위주
 const questions = [
-  { type:"mc", typeLabel:"내용 이해",
-    q:"팝업 토스터를 발명한 사람은 누구인가요?",
-    options:["Thomas Edison","Charles Strite","Charlie Brown","Charles Dickens"],
-    answer:1,
-    exp:"본문: \"The pop-up toaster was invented by <b>Charles Strite</b>.\" 발명가는 Charles Strite예요." },
+  // ===== 1단계: 단어 나열로 문장 익히기 =====
+  { type:"order", typeLabel:"단어 나열 ①",
+    q:"우리말에 맞게 단어를 나열하세요.\n\"팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다.\"",
+    words:["The pop-up toaster","was","invented","by","Charles Strite","in 1919","in the USA"],
+    answer:"The pop-up toaster was invented by Charles Strite in 1919 in the USA",
+    exp:"수동태(was + p.p. + by) 어순에 주의! <b>The pop-up toaster was invented by Charles Strite in 1919 in the USA.</b> '~에 의해'는 by, 연도(in 1919) → 장소(in the USA) 순서예요." },
 
-  { type:"mc", typeLabel:"내용 이해",
-    q:"팝업 토스터는 언제 발명되었나요?",
-    options:["in 1900","in 1909","in 1919","in 1990"],
-    answer:2,
-    exp:"본문: \"...was invented by Charles Strite <b>in 1919</b>.\" 연도는 1919년이에요." },
+  { type:"order", typeLabel:"단어 나열 ②",
+    q:"우리말에 맞게 단어를 나열하세요.\n\"1900년대에는 많은 식당들이 탄 토스트를 내놓았다.\"",
+    words:["In the 1900s,","many restaurants","served","burnt toast"],
+    answer:"In the 1900s, many restaurants served burnt toast",
+    exp:"<b>In the 1900s, many restaurants served burnt toast.</b> '내놓다/제공하다' served, '탄 토스트' burnt toast." },
 
-  { type:"mc", typeLabel:"내용 이해",
-    q:"팝업 토스터는 어느 나라에서 발명되었나요?",
-    options:["in the UK","in the USA","in Korea","in France"],
-    answer:1,
-    exp:"본문: \"...in 1919 <b>in the USA</b>.\" 미국(USA)에서 발명되었어요." },
+  { type:"order", typeLabel:"단어 나열 ③",
+    q:"우리말에 맞게 단어를 나열하세요.\n\"Charles는 탄 토스트를 좋아하지 않아서, 팝업 토스터를 발명했다.\"",
+    words:["Charles","didn't like","burnt toast,","so","he","invented","the pop-up toaster"],
+    answer:"Charles didn't like burnt toast, so he invented the pop-up toaster",
+    exp:"<b>Charles didn't like burnt toast, so he invented the pop-up toaster.</b> '그래서(결과)' so 앞에 원인, 뒤에 결과가 와요." },
 
-  { type:"mc", typeLabel:"내용 이해",
-    q:"1900년대에 많은 식당들은 무엇을 내놓았나요?",
-    options:["perfect toast","fresh bread","burnt toast","hot coffee"],
-    answer:2,
-    exp:"본문: \"In the 1900s, many restaurants served <b>burnt toast</b>.\" 탄 토스트(burnt toast)를 내놓았어요." },
+  { type:"order", typeLabel:"단어 나열 ④",
+    q:"우리말에 맞게 단어를 나열하세요.\n\"나는 그것이 매번 완벽한 토스트를 만들기 때문에 훌륭한 발명품이라고 생각한다.\"",
+    words:["I think","it is","a great invention","because","it makes","perfect toast","every time"],
+    answer:"I think it is a great invention because it makes perfect toast every time",
+    exp:"<b>I think it is a great invention because it makes perfect toast every time.</b> '~때문에(이유)' because 뒤에는 '주어+동사'가 와요." },
 
-  { type:"mc", typeLabel:"내용 이해",
-    q:"Charles가 토스터를 발명한 이유는 무엇인가요?",
-    options:["탄 토스트를 좋아하지 않아서","토스트를 팔고 싶어서","식당을 열고 싶어서","돈을 벌고 싶어서"],
-    answer:0,
-    exp:"본문: \"Charles <b>didn't like burnt toast, so</b> he invented the pop-up toaster.\" 탄 토스트가 싫어서 발명했어요." },
+  // ===== 2단계: 문장 통째로 쓰기 =====
+  { type:"fill", typeLabel:"문장 쓰기 ①",
+    q:"우리말을 보고 영어 문장을 직접 쓰세요.\n\"팝업 토스터는 1919년 미국에서 Charles Strite에 의해 발명되었다.\"",
+    accept:["The pop-up toaster was invented by Charles Strite in 1919 in the USA"],
+    placeholder:"영어 문장을 입력하세요",
+    exp:"정답: <b>The pop-up toaster was invented by Charles Strite in 1919 in the USA.</b>" },
 
-  { type:"mc", typeLabel:"내용 이해",
-    q:"글쓴이가 이것을 훌륭한 발명품이라고 생각하는 이유는?",
-    options:["빠르게 작동해서","값이 싸서","매번 완벽한 토스트를 만들어서","예뻐서"],
-    answer:2,
-    exp:"본문: \"...a great invention because it makes <b>perfect toast every time</b>.\" 매번 완벽한 토스트를 만들기 때문이에요." },
+  { type:"fill", typeLabel:"문장 쓰기 ②",
+    q:"우리말을 보고 영어 문장을 직접 쓰세요.\n\"1900년대에는 많은 식당들이 탄 토스트를 내놓았다.\"",
+    accept:["In the 1900s, many restaurants served burnt toast"],
+    placeholder:"영어 문장을 입력하세요",
+    exp:"정답: <b>In the 1900s, many restaurants served burnt toast.</b>" },
 
-  { type:"fill", typeLabel:"수동태 (be + p.p.)",
-    q:"빈칸을 채우세요: The pop-up toaster ___ ___ ___ Charles Strite. (~에 의해 발명되었다)",
+  { type:"fill", typeLabel:"문장 쓰기 ③",
+    q:"우리말을 보고 영어 문장을 직접 쓰세요.\n\"Charles는 탄 토스트를 좋아하지 않아서, 팝업 토스터를 발명했다.\"",
+    accept:["Charles didn't like burnt toast, so he invented the pop-up toaster"],
+    placeholder:"영어 문장을 입력하세요",
+    exp:"정답: <b>Charles didn't like burnt toast, so he invented the pop-up toaster.</b>" },
+
+  { type:"fill", typeLabel:"문장 쓰기 ④",
+    q:"우리말을 보고 영어 문장을 직접 쓰세요.\n\"나는 그것이 매번 완벽한 토스트를 만들기 때문에 훌륭한 발명품이라고 생각한다.\"",
+    accept:["I think it is a great invention because it makes perfect toast every time"],
+    placeholder:"영어 문장을 입력하세요",
+    exp:"정답: <b>I think it is a great invention because it makes perfect toast every time.</b>" },
+
+  // ===== 3단계: 핵심 표현 빈칸 (보너스) =====
+  { type:"fill", typeLabel:"핵심 표현",
+    q:"빈칸을 채우세요 (수동태):\nThe pop-up toaster ___ ___ ___ Charles Strite. (~에 의해 발명되었다)",
     accept:["was invented by"],
-    placeholder:"세 단어를 입력 (예: ___ ___ ___)",
-    exp:"수동태는 <b>be동사 + 과거분사(p.p.) + by</b> 형태! 과거이므로 <b>was invented by</b>가 정답이에요." },
+    placeholder:"세 단어 입력",
+    exp:"수동태는 <b>be동사 + 과거분사 + by</b>! 과거이므로 <b>was invented by</b>예요." },
 
-  { type:"fill", typeLabel:"빈칸 (동사)",
-    q:"빈칸을 채우세요: In the 1900s, many restaurants ___ burnt toast. (내놓았다)",
-    accept:["served"],
-    placeholder:"한 단어 입력",
-    exp:"'(음식을) 내놓다/제공하다'는 serve. 과거형은 <b>served</b>예요." },
-
-  { type:"fill", typeLabel:"접속사",
-    q:"빈칸을 채우세요: Charles didn't like burnt toast, ___ he invented the pop-up toaster. (그래서)",
-    accept:["so"],
-    placeholder:"한 단어 입력",
-    exp:"'그래서(결과)'를 뜻하는 접속사는 <b>so</b>예요. 원인+so+결과!" },
-
-  { type:"fill", typeLabel:"접속사",
-    q:"빈칸을 채우세요: I think it is a great invention ___ it makes perfect toast every time. (~때문에)",
+  { type:"fill", typeLabel:"핵심 표현",
+    q:"빈칸을 채우세요 (이유):\nI think it is a great invention ___ it makes perfect toast every time.",
     accept:["because"],
     placeholder:"한 단어 입력",
-    exp:"'~때문에(이유)'를 뜻하는 접속사는 <b>because</b>예요. because 뒤에는 '주어+동사'가 와요." },
-
-  { type:"order", typeLabel:"단어 배열",
-    q:"단어를 바르게 배열하세요: [ by / was / the pop-up toaster / invented / Charles Strite ]",
-    words:["the pop-up toaster","was","invented","by","Charles Strite"],
-    answer:"the pop-up toaster was invented by Charles Strite",
-    exp:"수동태 어순: <b>주어 + was + p.p. + by + 행위자</b> → The pop-up toaster was invented by Charles Strite." },
-
-  { type:"fill", typeLabel:"전체 빈칸",
-    q:"빈칸을 채우세요: It makes ___ toast every time. (완벽한)",
-    accept:["perfect"],
-    placeholder:"한 단어 입력",
-    exp:"'완벽한'은 <b>perfect</b>. 매번 완벽한 토스트를 만든다는 의미예요." },
+    exp:"'~때문에(이유)' 접속사는 <b>because</b>예요." },
 ];
 
 let cur = 0;
@@ -250,7 +241,7 @@ function pickWord(w,btn){
   $("picked").textContent = orderPick.map(b=>b.textContent).join("  ");
 }
 
-function norm(s){ return s.trim().toLowerCase().replace(/[.,!?]/g,'').replace(/\s+/g,' '); }
+function norm(s){ return s.trim().toLowerCase().replace(/[.,!?'’]/g,'').replace(/\s+/g,' '); }
 
 function submitAnswer(){
   const q = questions[cur];
@@ -339,29 +330,4 @@ function copyResult(score,total){
     // fallback
     const ta=document.createElement("textarea");
     ta.value=txt; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); ta.remove();
-    showToast("복사 완료! 카톡에 붙여넣기 하세요 📋");
-  });
-}
-
-function showToast(m){
-  const t=$("toast"); t.textContent=m; t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),1800);
-}
-
-// 키보드 핸들링
-document.addEventListener("keydown", e=>{
-  if(!$("quiz").classList.contains("hide")){
-    const q=questions[cur];
-    if(q.type==="mc" && /^[1-9]$/.test(e.key)){
-      const i=parseInt(e.key)-1;
-      if(i<q.options.length){ selectMC(i); }
-    }
-    if(e.key==="Enter"){ e.preventDefault(); submitAnswer(); }
-  } else if(!$("start").classList.contains("hide")){
-    if(e.key==="Enter"){ e.preventDefault(); startQuiz(); }
-  }
-});
-</script>
-</body>
-</html>
+    document.execCommand("copy
